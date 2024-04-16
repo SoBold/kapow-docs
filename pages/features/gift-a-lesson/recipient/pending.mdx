@@ -1,0 +1,47 @@
+# Pending
+
+## Flow
+
+1. The parseInviteLink() function checks the status of the invite by running getStatus() on the id hidden in the link
+2. If PENDING is the return of getStatus(), four separate functions are called:
+    - notification()
+    - firstTime()
+    - storeDevice()
+    - updateAccepted()
+
+## Sub Function Flow
+
+### notification()
+
+**Sends email notification to User that invite has been accepted**
+
+1. Takes the foriegn key, user_id, from the invite and uses this to access the user meta table
+2. Gets email at user_id and invite id
+3. Uses invite id so email specifies which lesson/ invite has been used
+4. Generates and sends email to user email
+
+### firstTime()
+
+**Show the first time pop up**
+
+-   calls JS for pop up
+-   passes the lesson_id to the JS so the correct image can be displayed on the pop up
+
+### storeDevice()
+
+**Idenitifies device and updates device meta**
+
+1. Find the device
+2. Generate unique id for the device
+3. Create new row in meta device table which has the foreign key of this invite so it can be linked back.
+4. Add deviceId to first column of new row in this table
+5. Call updateDevice() to update the device column of the invite table with the number of deviced registered.
+
+### updateAccepted()
+
+**Updates the accepted value in the invite table from 0 to 1**
+
+_This should only be called on Pending_
+
+1. Updates the accepted value in the invites table from 0 to 1
+2. Adds a row to the invite meta table for this invite and records the current date in date_accepted
