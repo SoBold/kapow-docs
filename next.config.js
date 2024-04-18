@@ -15,10 +15,11 @@ const nextConfig = {
     trailingSlash: true,
     basePath: assetPrefix,
     assetPrefix,
-    output: 'export',
 };
 
-// isProduction && (nextConfig.output = 'export');
+isProduction && (nextConfig.output = 'export');
+
+console.log(nextConfig);
 
 module.exports = {
     ...withNextra(),
