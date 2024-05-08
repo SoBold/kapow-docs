@@ -4,7 +4,7 @@ const withNextra = require('nextra')({
 });
 
 const isProduction = process.env.NODE_ENV === 'production';
-const assetPrefix = isProduction ? '/kapow-docs' : '';
+const prefix = isProduction ? '/kapow-docs' : '';
 
 const nextConfig = {
     images: {
@@ -13,13 +13,11 @@ const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
     trailingSlash: true,
-    basePath: assetPrefix,
-    assetPrefix,
+    basePath: prefix,
+    assetPrefix: prefix,
 };
 
 isProduction && (nextConfig.output = 'export');
-
-console.log(nextConfig);
 
 module.exports = {
     ...withNextra(),
