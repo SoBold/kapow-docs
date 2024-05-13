@@ -1,16 +1,16 @@
-
-import React from 'react'
-import { DocsThemeConfig } from 'nextra-theme-docs'
+import React from 'react';
+import { DocsThemeConfig } from 'nextra-theme-docs';
+import Logo from './components/Logo/Logo';
 
 const config: DocsThemeConfig = {
-  logo: <span>Kapow Docs</span>,
-  project: {
-    link: 'https://github.com/SoBold/kapow-docs',
-  },
-  docsRepositoryBase: 'https://github.com/SoBold/kapow-docs',
-  footer: {
-    text: 'Kapow Docs',
-  },
-}
+    logo: Logo,
+    project: {
+        link: 'https://github.com/SoBold/kapow-docs',
+    },
+    docsRepositoryBase: 'https://github.com/SoBold/kapow-docs',
+    footer: {
+        text: 'Kapow Docs',
+    },
+};
 
-export default config
+export default config;

@@ -1,0 +1,53 @@
+import { FileTree, Callout } from 'nextra/components';
+
+# Dashboard
+
+New Kapow Dashboard will be the first to adopt a new folder structure and a new workflow in terms of file placement.
+The new folder structure will try and follow some of the concepts of `Next.js`, this should make it easy for a rebuild in the future, allowing us to use a design pattern we're already familiar with.
+
+The folder structure will be the following:
+<Callout>
+    The folder structure assumes all other files and directories are left untouched
+</Callout>
+
+<FileTree>
+    <FileTree.Folder name="core" open={true}>
+    </FileTree.Folder>
+    <FileTree.Folder name="src" open={true}>
+        <FileTree.Folder name="blocks" open={true}>
+            <FileTree.Folder name="..." open={true}>
+            </FileTree.Folder>
+        </FileTree.Folder>
+        <FileTree.Folder name="components" open={true}>
+            <FileTree.Folder name="button" open={true}>
+                <FileTree.File name="button.php" />
+                <FileTree.File name="_button.scss" />
+                <FileTree.File name="_button.js" />
+            </FileTree.Folder>
+        </FileTree.Folder>
+        <FileTree.Folder name="layouts" open={true}>
+            <FileTree.Folder name="..." open={true}>
+            </FileTree.Folder>
+        </FileTree.Folder>
+    </FileTree.Folder>
+</FileTree>
+
+- `src` Component-first folder.
+- `blocks` Blocks folder: acf blocks, flexible content.
+- `components` Components folder: anything that makes a block.
+- `layouts` Layouts folder: repeated structures across the site (e.g. Nav, Headers).
+- `core` PHP logic responsible for the behaviour of src.
+
+## `src` folder
+
+This folder will hold every file, with a compoent-first approach, for a max of two-levels of depth.
+
+Inside a single `[component|block|layout]` folder there will be `php`, `scss` & `js`.
+
+`scss` and `js` files are underscored for convention.
+
+## `app` folder
+
+This folder will hold every file pertaining the logic of `src`, spanning from render functions and utilities.
+
+Business logic won't be in this file.
