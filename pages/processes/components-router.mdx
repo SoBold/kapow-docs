@@ -1,0 +1,146 @@
+import { FileTree, Callout } from 'nextra/components';
+
+# Components Router
+
+The new components router will allow a more streamlined use of components and blocks within a template.
+Dashboard will be the first feature to use this updated flow.
+
+## Folder structure
+
+The following one will be the new folder structure.
+
+<FileTree>
+    <FileTree.Folder name="core" open={true}>
+        <FileTree.File name="Component.php" />
+    </FileTree.Folder>
+    <FileTree.Folder name="src" open={true}>
+        <FileTree.Folder name="blocks" open={true}>
+            <FileTree.Folder name="..." open={true}>
+            </FileTree.Folder>
+        </FileTree.Folder>
+        <FileTree.Folder name="components" open={true}>
+            <FileTree.Folder name="button" open={true}>
+                <FileTree.File name="button.php" />
+                <FileTree.File name="_button.scss" />
+                <FileTree.File name="_button.js" />
+            </FileTree.Folder>
+        </FileTree.Folder>
+        <FileTree.Folder name="layouts" open={true}>
+            <FileTree.Folder name="..." open={true}>
+            </FileTree.Folder>
+        </FileTree.Folder>
+    </FileTree.Folder>
+</FileTree>
+
+- `src` Component-first folder.
+- `blocks` Blocks folder: acf blocks, flexible content.
+- `components` Components folder: anything that makes a block.
+- `layouts` Layouts folder: repeated structures across the site (e.g. Nav, Headers).
+- `core` PHP logic responsible for the behaviour of src.
+
+## `src` folder
+
+This folder will hold every file, with a component-first approach, for a max of two-levels of depth.
+
+<Callout type="warning">
+    Having three or more levels (e.g. `./src/components/subfolder/sample/sample.php`) is not permitted
+</Callout>
+
+Inside a single `[component|block|layout]` folder there will be `php`, `scss` & `js`.
+
+`scss` files are underscored for convention.
+
+### PHP files in src
+
+PHP files can be named freely, but is best practice to call them like the parent folder (e.g. `./src/blocks/button/button.php)
+
+`Component.php` will get the file and is, in its essence, a wrapper for `get_template_part()`, therefore passing `$args` is common practice.
+
+The recommeneded usage of args in a php file is as follows:
+
+```php
+$heading = $args['heading'] ?? 'default value';
+$expectedArray = $args['cards'] ?? [];
+$expectedBoolean = $args['toggle'] ?? false;
+```
+Having `$args` collected using `extract()` is discouraged as it opens up for security issues, using [array destructuring](https://www.php.net/manual/en/language.types.array.php) is also discouraged as it could potentially cause warnings if components are not provided with exactly the `$args` they're expecting.
+
+### SCSS in src
+
+SCSS files are to be used within each folder, conventionally named like the php file, prepended with an underscore (e.g. `_sample.scss).
+
+A `_app.scss` file lives in `./src` and is responsible for the imports of all these files.
+
+### JS in src
+
+JS files are to be named exactly like the php file, this allows for automatic enqueueing using a `wp_footer` hook.
+
+JS files that are used as payload from an ajax call that introduces a new component are to be required in that component through a `<script>` tag.
+
+```html
+<script async defer src="<?= get_template_directory_uri() . '/src/components/sample/specialfile.js'; ?>"></script>
+```
+<Callout type="warning">
+    `async` and `defer` are used so the execution is delayed and doesn't disrupt the page.
+</Callout>
+
+More is explained in the Component.php section.
+
+## `core` folder
+
+This folder will hold every file pertaining the logic of `src`, spanning from render functions and utilities.
+
+### `Component.php`
+
+This file has `get()` as its main method. This method is public and static, meant to be used across template files and inner files (components, blocks and layouts).
+
+Simple usage:
+
+```php
+<?= Component::get('components/sample/sample']); ?>
+```
+
+Passing args:
+
+```php
+<?= Component::get('components/sample/sample', [
+    'foo' => 'bar',
+]); ?>
+```
+
+<Callout type="warning">
+    The `get` method only returns the requested component, `echo` (or `<?=`) will be needed to output content
+</Callout>
+
+***
+
+For `js` files, a static property `$scripts` is updated at runtime with all the found files from `get()` calls.
+
+The `$scripts` array is updated only with the first instance of the same-name `get()` call, ensuring no files are listed (or enqueued) twice.
+
+In `functions.php` a `wp_footer` hook will call `enqueueScripts()` from `Component.php`. This function wil enqueue all scripts present in `$scripts` using async strategy and adding them in the footer.
+
+## Design Patterns
+
+Whenever the keyword any is used in this section: Template, Blocks and Layouts are assumed.
+The common use-cases inside `./src` are 3:
+
+- Template calls `layout`
+- Template calls `blocks`
+- Any calls `component`
+
+The first two can be ignored, as they have a direct relationship, the parent calls one instance of the child.
+
+The last instance though, could be simple or looped:
+- The parent calls one component, and no other steps are required.\
+- The parent has to call a component `n` times.
+
+### Loop pattern
+Let's take a tag component as example.\
+This component is meant to appear as a little pill-shaped tag, with some border-radius and a little border.\
+The restraints we need to put in place to allow for a simple usage are:
+- The tag style goes from the tag itself up until the border, no outer box-model property is defined by the tag itself.
+- The positioning of the tag is left static and never modified by the tag's style.
+- No JS should be added for this component.
+
+Considering these 3 points we can then define another element TODO CONTINUE
