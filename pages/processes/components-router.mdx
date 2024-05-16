@@ -21,7 +21,7 @@ The following one will be the new folder structure.
         <FileTree.Folder name="components" open={true}>
             <FileTree.Folder name="button" open={true}>
                 <FileTree.File name="button.php" />
-                <FileTree.File name="_button.scss" />
+                <FileTree.File name="button.scss" />
                 <FileTree.File name="_button.js" />
             </FileTree.Folder>
         </FileTree.Folder>
@@ -97,7 +97,7 @@ This file has `get()` as its main method. This method is public and static, mean
 Simple usage:
 
 ```php
-<?= Component::get('components/sample/sample']); ?>
+<?= Component::get('components/sample/sample'); ?>
 ```
 
 Passing args:
