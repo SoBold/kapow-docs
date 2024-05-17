@@ -1,3 +1,172 @@
+# Gift a Lesson
+
+Gift a lesson is a feature that allows Kapow Users to share a lesson to a colleague who's not on Kapow.\
+Through a lesson page, a user can open an interface that allows them to enter an email address of a colleague they wish to invite.\
+An email will be sent to the invited colleague containing a magic link, from the first click of the magic link they will be able to access the gifted lesson for 30 days.
+
+## Database Schema
+
+Gift a lesson relies on two tables
+- `wp_invites`
+- `wp_invitemeta`
+
+### `wp_invites`
+
+```sql
+Table wp_invites {
+    id integer [pk, unique, increment]
+    user_id integer
+    lesson_id integer
+    date_created datetime [default: '0000-00-00 00:00:00']
+    email varchar(255)
+    link varchar(255)
+    accepted bool
+}
+```
+
+This table holds data for each invite:
+
+- `user_id` refers to the row in `wp_users` from where the invite originated
+- `lesson_id` refers to the row in `wp_posts` from where the invite originated
+- `date_created` is a `datetime` of the invite, useful for retrieving validity of the invite
+- `email` is the target email
+- `link` is the generated link
+- `accepted` a Boolean to mark whether the link is active
+
+### `wp_invites`
+
+```sql
+Table wp_invitemeta {
+    id integer [pk, unique, increment]
+    invite_id integer
+    meta_key varchar(255)
+    meta_value varchar(255)
+}
+```
+
+This table holds additional data for each invite:
+
+- `invite_id` relational id referring to a single `wp_invites`.  Related to it on a 1 (`wp_invites`) to many (`wp_invitemeta`)
+- `meta_key` type of stored data, can be:
+	- `device` type of device where the invite has been accessed from
+	- `accepted_at` when the invite was accepted
+	- `type` if it's an expired link
+- `meta_value` stores the value of the above key
+
+## Invite Class
+
+### Constants
+
+#### `PENDING`
+Represents the pending status of an invite.
+
+#### `INACTIVE`
+Represents the inactive status of an invite.
+
+#### `ACTIVE`
+Represents the active status of an invite.
+
+#### `EXPIRED`
+Represents the expired status of an invite.
+
+#### `UNKNOWN_STATUS`
+Represents an unknown status of an invite.
+
+### Properties
+
+#### `private static $table`
+Holds the name of the invites table.
+
+#### `private static $metaTable`
+Holds the name of the invite meta table.
+
+#### `private mixed $data`
+Holds the invite data.
+
+### Methods
+
+#### `private static function getTable()`
+Retrieves the name of the invites table.
+
+#### `private static function getMetaTable()`
+Retrieves the name of the invite meta table.
+
+#### `public function __get(string $prop): mixed`
+Magic method to get a property from the invite data.
+
+#### `public function __set(string $prop, mixed $value)`
+Magic method to set a property in the invite data.
+
+#### `public function save()`
+Saves the invite data to the database.
+
+#### `public function delete(): bool`
+Deletes the invite from the database.
+
+#### `public static function find(int $id): ?Invite`
+Finds an invite by ID.
+
+#### `public static function getAllByUserId($userId)`
+Retrieves all invites for a given user ID.
+
+#### `private static function makeInvite($data)`
+Factory helper to create an invite object from data.
+
+#### `public function getMeta(string $metaKey)`
+Gets the meta value for a given meta key.
+
+#### `public function setMeta(string $metaKey, $metaValue)`
+Sets the meta value for a given meta key.
+
+#### `public function deleteMeta(string $metaKey)`
+Deletes the meta value for a given meta key.
+
+#### `public function getAllMeta()`
+Retrieves all meta values for the invite.
+
+#### `public static function init()`
+Initializes the invite REST handlers and scripts.
+
+#### `public static function inviteRouter()`
+Registers the REST routes for invite operations.
+
+#### `public static function addScripts()`
+Enqueues the scripts for invite handling.
+
+#### `public static function deleteInvite(\WP_REST_Request $request): \WP_REST_Response`
+Deletes an invite via REST API.
+
+#### `public function getStatus(): string`
+Gets the current status of the invite.
+
+#### `public static function getOpenByUserId($userId): int`
+Counts the number of open invites for a given user ID.
+
+#### `public static function categorize(array $invites): array`
+Categorizes invites into 'active' and 'inactive' based on their status.
+
+#### `public function deactivate(): bool`
+Deactivates the invite by setting the meta `inactive` to 'true'.
+
+#### `public function generateMagicLink()`
+Generates a magic link for the invite.
+
+#### `public static function validateMagicLink($token, $email, $inviteId)`
+Validates a magic link.
+
+#### `public static function parseInviteLink($fakeId)`
+Parses an invite link and handles the invite based on its status.
+
+#### `private function activate()`
+Activates the invite by setting it to accepted and saving the date accepted.
+
+## Flows
+
+### Invited User Flow
+
+
+***
+
 # Pending
 
 ## Flow
