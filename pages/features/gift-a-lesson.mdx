@@ -1,3 +1,5 @@
+import { Callout } from 'nextra/components';
+
 # Gift a Lesson
 
 Gift a lesson is a feature that allows Kapow Users to share a lesson to a colleague who's not on Kapow.\
@@ -33,7 +35,7 @@ This table holds data for each invite:
 - `link` is the generated link
 - `accepted` a Boolean to mark whether the link is active
 
-### `wp_invites`
+### `wp_invitemeta`
 
 ```sql
 Table wp_invitemeta {
@@ -52,6 +54,29 @@ This table holds additional data for each invite:
 	- `accepted_at` when the invite was accepted
 	- `type` if it's an expired link
 - `meta_value` stores the value of the above key
+
+### Invite status overview
+
+A single invite can hold 4 different statuses. Statuses are;
+
+- `pending`: An invite that has not yet been accepted. This can decrease invites count.
+- `inactive `: An invite that was never active, doesn't decrease invites count.
+- `active`: An active invite, this decreases invites count.
+- `expired`: Once active, invite past expiration. This permanently decreases invites count.
+
+Using both tables (`wp_invites` & `wp_invitemeta`) all four statuses can be achieved.
+
+| Status     | Requirements                                                            |
+| :--------- | ----------------------------------------------------------------------: |
+| Pending    | `wp_invite.accepted = 0` & `wp_invite.date_created < 10 days ago`       |
+| Inactive   | `wp_invite.accepted = 0` & `wp_invite.date_created <= 10 days ago`      |
+| Inactive   | `wp_invite.accepted = 0` & `wp_invitemeta[inactive] = 1 `               |
+| Active     | `wp_invite.accepted = 0` & `wp_invitemeta[date_accepted] < 30 days ago`  |
+| Expired    | `wp_invite.accepted = 0` & `wp_invitemeta[date_accepted] >= 30 days ago` |
+
+<Callout type="warning">
+    `Inactive` status can be achieved in two ways!
+</Callout>
 
 ## Invite Class
 
