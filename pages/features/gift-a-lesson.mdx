@@ -69,7 +69,7 @@ Using both tables (`wp_invites` & `wp_invitemeta`) all four statuses can be achi
 | Status     | Requirements                                                             |
 | :--------- | -----------------------------------------------------------------------: |
 | Pending    | `wp_invite.accepted = 0` & `wp_invite.date_created < 10 days ago`        |
-| Inactive   | `wp_invite.accepted = 0` & `wp_invite.date_created <= 10 days ago`       |
+| Inactive   | `wp_invite.accepted = 0` & `wp_invite.date_created >= 10 days ago`       |
 | Inactive   | `wp_invite.accepted = 0` & `wp_invitemeta[inactive] = 1 `                |
 | Active     | `wp_invite.accepted = 1` & `wp_invitemeta[date_accepted] < 30 days ago`  |
 | Expired    | `wp_invite.accepted = 1` & `wp_invitemeta[date_accepted] >= 30 days ago` |
